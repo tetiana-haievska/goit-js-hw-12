@@ -1,4 +1,4 @@
-.gallery {
+/* .gallery {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
@@ -62,4 +62,4 @@
 .feedback-form button:hover,
 .feedback-form button:focus {
   background-color: #6c8cff;
-}
+} */
