@@ -1,0 +1,12 @@
+import{i as d,S as f}from"./assets/vendor-5ObWk2rO.js";(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const e of document.querySelectorAll('link[rel="modulepreload"]'))r(e);new MutationObserver(e=>{for(const o of e)if(o.type==="childList")for(const i of o.addedNodes)i.tagName==="LINK"&&i.rel==="modulepreload"&&r(i)}).observe(document,{childList:!0,subtree:!0});function a(e){const o={};return e.integrity&&(o.integrity=e.integrity),e.referrerPolicy&&(o.referrerPolicy=e.referrerPolicy),e.crossOrigin==="use-credentials"?o.credentials="include":e.crossOrigin==="anonymous"?o.credentials="omit":o.credentials="same-origin",o}function r(e){if(e.ep)return;e.ep=!0;const o=a(e);fetch(e.href,o)}})();const y="47504647-de6fca25d262a81a07b30a07f",p="https://pixabay.com/api/";async function m(n,t=1,a=12){const r=`${p}?key=${y}&q=${encodeURIComponent(n)}&image_type=photo&orientation=horizontal&safesearch=true&page=${t}&per_page=${a}`;try{const e=await fetch(r);if(!e.ok)throw new Error("Failed to fetch data");return await e.json()}catch(e){throw console.error(e.message),e}}function h(n){const t=document.querySelector(".gallery"),a=n.map(r=>`
+    <a href="${r.largeImageURL}" class="gallery__item">
+      <img src="${r.webformatURL}" alt="${r.tags}" loading="lazy" />
+      <div class="info">
+        <p><b>Likes:</b> ${r.likes}</p>
+        <p><b>Views:</b> ${r.views}</p>
+        <p><b>Comments:</b> ${r.comments}</p>
+        <p><b>Downloads:</b> ${r.downloads}</p>
+      </div>
+    </a>
+  `).join("");t.innerHTML=a}function g(){const n=document.querySelector(".gallery");n.innerHTML=""}function w(){document.querySelector(".loader").classList.remove("hidden")}function b(){document.querySelector(".loader").classList.add("hidden")}function s(n,t="info"){d[t]({title:"Notification",message:n,position:"topRight"})}const L=document.querySelector(".search-form"),S=document.querySelector(".search-input");document.querySelector(".gallery");document.querySelector(".loader");let u=1,c="",l;L.addEventListener("submit",async n=>{if(n.preventDefault(),c=S.value.trim(),!c){s("Please enter a search query!","warning");return}g(),u=1;try{w();const t=await m(c,u);t.hits.length===0?s("Sorry, there are no images matching your search query. Please try again!","error"):(h(t.hits),l?l.refresh():l=new f(".gallery a"))}catch{s("Something went wrong. Please try again later!","error")}finally{b()}});
+//# sourceMappingURL=index.js.map
