@@ -1,110 +1,84 @@
-import { fetchImages } from './js/pixabay-api.js';
+import { fetchImages } from './js/pixabay-api';
 import {
   renderGallery,
   clearGallery,
   showLoader,
   hideLoader,
   showNotification,
-} from './js/render-functions.js';
+} from './js/render-functions';
 
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
-import iziToast from 'izitoast';
-import 'izitoast/dist/css/iziToast.min.css';
-
-const form = document.querySelector('.search-form');
-const input = document.querySelector('.search-input');
-const gallery = document.querySelector('.gallery');
-const loadMoreButton = document.querySelector('.load-more');
-
-let lightbox;
-let currentPage = 1;
 let query = '';
-const perPage = 15;
+let page = 1;
 let totalHits = 0;
 
-/**
- * Відображення або приховування кнопки Load More
- * @param {boolean} isVisible
- */
-function toggleLoadMoreButton(isVisible) {
-  loadMoreButton.style.display = isVisible ? 'block' : 'none';
-}
+const form = document.querySelector('.search-form');
+const loadMoreBtn = document.querySelector('.load-more');
+const gallery = document.querySelector('.gallery');
 
-/**
- * Повідомлення про досягнення кінця результатів
- */
-function showEndMessage() {
-  iziToast.info({
-    title: 'End of results',
-    message: "We're sorry, but you've reached the end of search results.",
-    position: 'topRight',
-  });
-}
-
-// Обробник події сабміту форми
-form.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  query = event.target.elements.searchQuery.value.trim();
-
-  if (!query) {
-    showNotification('Please enter a search query!', 'warning');
-    return;
+function toggleLoadMoreButton(visible) {
+  if (visible) {
+    loadMoreBtn.classList.remove('hidden');
+  } else {
+    loadMoreBtn.classList.add('hidden');
   }
+}
 
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  query = e.target.querySelector('.search-input').value.trim();
+
+  if (!query) return;
+
+  page = 1;
   clearGallery();
-  currentPage = 1;
   toggleLoadMoreButton(false);
+  showLoader();
 
   try {
-    showLoader();
-    const data = await fetchImages(query, currentPage, perPage);
+    const data = await fetchImages(query, page);
     totalHits = data.totalHits;
-
     if (data.hits.length === 0) {
-      showNotification(
-        'Sorry, there are no images matching your search query. Please try again!',
-        'error'
-      );
+      showNotification('Sorry, no images found.', 'error');
+      toggleLoadMoreButton(false);
     } else {
       renderGallery(data.hits);
-      if (!lightbox) {
-        lightbox = new SimpleLightbox('.gallery a');
-      } else {
-        lightbox.refresh();
-      }
+      toggleLoadMoreButton(true);
     }
-
-    if (totalHits > perPage) toggleLoadMoreButton(true);
   } catch (error) {
-    showNotification('Something went wrong. Please try again later!', 'error');
+    showNotification('Something went wrong. Please try again.', 'error');
   } finally {
     hideLoader();
   }
 });
 
-// Обробник події кліку на Load More
-loadMoreButton.addEventListener('click', async () => {
-  currentPage += 1;
+loadMoreBtn.addEventListener('click', async () => {
+  page += 1;
+  showLoader();
 
   try {
-    const data = await fetchImages(query, currentPage, perPage);
-
-    renderGallery(data.hits, true); // Додати нові зображення
-    lightbox.refresh();
-
-    // Плавне прокручування сторінки
-    const galleryHeight = gallery.firstElementChild.getBoundingClientRect().height;
-    window.scrollBy({
-      top: galleryHeight * 2,
-      behavior: 'smooth',
-    });
-
-    if (currentPage * perPage >= totalHits) {
+    const data = await fetchImages(query, page);
+    if (data.hits.length === 0 || page * 15 >= totalHits) {
+      showNotification(
+        "We're sorry, but you've reached the end of search results.",
+        'info'
+      );
       toggleLoadMoreButton(false);
-      showEndMessage();
+    } else {
+      renderGallery(data.hits);
+      scrollToNewImages();
     }
   } catch (error) {
-    console.error('Error fetching images:', error);
+    showNotification('Something went wrong. Please try again.', 'error');
+  } finally {
+    hideLoader();
   }
 });
+
+function scrollToNewImages() {
+  const galleryItem = gallery.lastElementChild;
+  const { height } = galleryItem.getBoundingClientRect();
+  window.scrollBy({
+    top: height * 2,
+    behavior: 'smooth',
+  });
+}

@@ -14,40 +14,26 @@ export function renderGallery(images) {
         <p><b>Comments:</b> ${image.comments}</p>
         <p><b>Downloads:</b> ${image.downloads}</p>
       </div>
-    </a>
-  `
+    </a>`
     )
     .join('');
-  gallery.insertAdjacentHTML('beforeend', markup); // Додає нові елементи до галереї
+  gallery.innerHTML += markup; // Додаємо нові зображення до існуючих
 }
 
 export function clearGallery() {
   const gallery = document.querySelector('.gallery');
-  gallery.innerHTML = ''; // Очищає всю галерею
+  gallery.innerHTML = ''; // Очищаємо галерею перед новим пошуком
 }
 
-export const toggleLoadMoreButton = (isVisible) => {
-  const loadMoreButton = document.querySelector('.load-more');
-  if (loadMoreButton) {
-    loadMoreButton.style.display = isVisible ? 'block' : 'none';
-  }
-};
-
 export function showLoader() {
-  const loader = document.querySelector('.loader');
-  if (loader) loader.classList.remove('hidden');
+  document.querySelector('.loader').classList.remove('hidden');
 }
 
 export function hideLoader() {
-  const loader = document.querySelector('.loader');
-  if (loader) loader.classList.add('hidden');
+  document.querySelector('.loader').classList.add('hidden');
 }
 
 export function showNotification(message, type = 'info') {
-  if (!['info', 'success', 'warning', 'error'].includes(type)) {
-    console.error(`Invalid notification type: ${type}`);
-    return;
-  }
   iziToast[type]({
     title: 'Notification',
     message,
