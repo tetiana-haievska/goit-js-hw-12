@@ -100,15 +100,11 @@ b {
   width: 125px;
   background-color: #4e75ff;
   color: #fff;
-  }
+}
 
 .load-more.hidden {
   display: none;
 }
-
-/* .hidden {
-  display: none;
-} */
 
 @keyframes spin {
   to {

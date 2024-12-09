@@ -61,15 +61,16 @@ loadMoreBtn.addEventListener('click', async () => {
 
   try {
     const data = await fetchImages(query, page);
-    if (data.hits.length === 0 || page * 15 >= totalHits) {
+    renderGallery(data.hits);
+    scrollToNewImages();
+
+    const isLastPage = page * 15 >= totalHits;
+    if (isLastPage) {
+      toggleLoadMoreButton(false);
       showNotification(
         "We're sorry, but you've reached the end of search results.",
         'info'
       );
-      toggleLoadMoreButton(false);
-    } else {
-      renderGallery(data.hits);
-      scrollToNewImages();
     }
   } catch (error) {
     showNotification('Something went wrong. Please try again.', 'error');
