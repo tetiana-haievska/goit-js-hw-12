@@ -39,10 +39,14 @@ form.addEventListener('submit', async e => {
     totalHits = data.totalHits;
     if (data.hits.length === 0) {
       showNotification('Sorry, no images found.', 'error');
-      toggleLoadMoreButton(false);
     } else {
       renderGallery(data.hits);
-      toggleLoadMoreButton(true);
+
+      if (totalHits > page * 15) {
+        toggleLoadMoreButton(true);
+      } else {
+        toggleLoadMoreButton(false);
+      }
     }
   } catch (error) {
     showNotification('Something went wrong. Please try again.', 'error');
