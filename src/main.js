@@ -87,4 +87,3 @@ function scrollToNewImages() {
     behavior: 'smooth',
   });
 }
-
